@@ -128,4 +128,19 @@ function getIngredientsRecette($idRecette) {
             WHERE a.id_recette = $id";
     return parcoursRs(SQLSelect($sql));
 }
+
+function modifierRecette($idRecette, $nom, $description, $id_categorie, $image_ext = false) {
+    $nomSafe = addslashes($nom);
+    $descSafe = addslashes($description);
+    
+    $sql = "UPDATE RECETTE SET nom='$nomSafe', description='$descSafe', id_categorie='$id_categorie'";
+    
+    // Si une nouvelle image a été uploadée, on met à jour l'extension
+    if ($image_ext) {
+        $sql .= ", image_ext='$image_ext'";
+    }
+    
+    $sql .= " WHERE id=$idRecette";
+    return SQLUpdate($sql);
+}
 ?>

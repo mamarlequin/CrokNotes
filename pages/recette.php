@@ -1,26 +1,30 @@
 <?php
 include_once "libs/modele.php";
 
+// Récupération de l'ID de la recette depuis l'URL
 $id = valider("id");
 $recette = getRecette($id);
 
+// Si la recette n'existe pas, retour à l'accueil avec un message
 if (!$recette) {
     header("Location: index.php?view=main&msg=" . urlencode("Désolé, cette recette est introuvable."));
     exit();
 }
 
+// Récupération des données liées
 $ingredients = getIngredientsRecette($id);
 $etapes = getEtapes($id);
+
+// Image par défaut si aucune image n'est trouvée
 $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=800&auto=format&fit=crop";
 
-// Vérification si l'utilisateur est le créateur
-$isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_createur']);
+// Vérification si l'utilisateur est l'auteur pour afficher le bouton modifier
+$isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["id_createur"]);
 ?>
 
 <main class="pt-24 px-6 pb-20 max-w-6xl mx-auto">
     <div class="glass rounded-[3rem] overflow-hidden shadow-2xl animate-in fade-in duration-700">
         
-        <!-- Image de couverture et Titre -->
         <div class="relative h-[450px]">
             <?php 
                 $path = "ressources/recettes/" . $recette['id'] . "." . $recette['image_ext'];
@@ -33,35 +37,29 @@ $isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
             
-            <div class="absolute bottom-12 left-12 right-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div>
-                    <div class="flex items-center gap-3 mb-4">
+            <div class="absolute bottom-12 left-12 right-12">
+                <div class="flex items-center justify-between">
+                    <div class="space-y-4">
                         <span class="glass px-4 py-1.5 rounded-full text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
                             <?php echo htmlspecialchars($recette['nom_categorie']); ?>
                         </span>
+                        <h1 class="text-5xl md:text-7xl font-black text-white italic drop-shadow-2xl">
+                            <?php echo htmlspecialchars($recette['nom']); ?>
+                        </h1>
                     </div>
-                    <h1 class="text-5xl md:text-7xl font-black text-white italic drop-shadow-2xl">
-                        <?php echo htmlspecialchars($recette['nom']); ?>
-                    </h1>
+                    
+                    <?php if ($isAuthor): ?>
+                    <a href="./?view=modifier&id=<?php echo $recette['id']; ?>" class="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-orange-500 text-white rounded-2xl font-bold transition-all backdrop-blur-md border border-white/20">
+                        <i data-lucide="edit-3" class="w-5 h-5"></i>
+                        <span>Modifier</span>
+                    </a>
+                    <?php endif; ?>
                 </div>
-
-                <!-- BOUTON DE SUPPRESSION (Visible uniquement par le créateur) -->
-                <?php if ($isCreator): ?>
-                    <div class="flex gap-4">
-                        <a href="controleur.php?action=SupprimerRecette&id=<?php echo $id; ?>" 
-                           onclick="return confirm('Es-tu sûr de vouloir supprimer définitivement cette recette ?');"
-                           class="flex items-center gap-2 px-6 py-3 bg-red-500/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/30 rounded-2xl transition-all font-black text-xs uppercase tracking-widest shadow-xl">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i> Supprimer ma recette
-                        </a>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>
 
-        <!-- Contenu Principal -->
         <div class="p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-16">
             
-            <!-- Colonne de Gauche : Ingrédients -->
             <div class="lg:col-span-1 space-y-8">
                 <div class="space-y-6">
                     <h2 class="text-2xl font-bold text-white flex items-center gap-3 border-b border-white/10 pb-4">
@@ -87,21 +85,18 @@ $isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_
                     <?php endif; ?>
                 </div>
 
-                <!-- Carte du Chef -->
                 <div class="glass p-6 rounded-[2rem] border-orange-500/20 bg-orange-500/5 flex items-center gap-4">
                     <div class="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center text-white font-black text-2xl shadow-lg">
                         <?php echo strtoupper($recette['nom_createur'][0]); ?>
                     </div>
                     <div>
                         <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Recette de</p>
-                        <p class="text-white font-bold text-xl"><?php echo htmlspecialchars($recette['nom_createur']); ?></p>
+                        <p class="text-white font-bold text-xl">Chef <?php echo htmlspecialchars($recette['nom_createur']); ?></p>
                     </div>
                 </div>
             </div>
 
-            <!-- Colonne de Droite : Préparation -->
             <div class="lg:col-span-2 space-y-12">
-                <!-- Description / Introduction -->
                 <div class="relative">
                     <i data-lucide="quote" class="absolute -top-4 -left-4 w-10 h-10 text-white/5 -rotate-12"></i>
                     <p class="text-xl text-white/80 leading-relaxed font-medium italic pl-4">
@@ -109,7 +104,6 @@ $isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_
                     </p>
                 </div>
 
-                <!-- Étapes -->
                 <div class="space-y-8">
                     <h2 class="text-2xl font-bold text-white flex items-center gap-3 border-b border-white/10 pb-4">
                         <i data-lucide="chef-hat" class="text-orange-500 w-6 h-6"></i> Préparation
@@ -143,7 +137,6 @@ $isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_
                     </a>
                 </div>
             </div>
-
         </div>
     </div>
 </main>

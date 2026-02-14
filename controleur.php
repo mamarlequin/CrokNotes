@@ -19,6 +19,36 @@ if ($action = valider("action")) {
             }
         break;
 
+	case 'Modifier':
+	    securiser("index.php?view=main");
+	    $idRecette = valider("id_recette");
+	    $idUser = $_SESSION["idUser"];
+
+	    // Vérification de sécurité : est-ce bien l'auteur ?
+	    $recetteActuelle = getRecette($idRecette);
+	    if ($recetteActuelle["id_createur"] == $idUser) {
+	        $nom = valider("nom");
+	        $cat = valider("id_categorie");
+	        $desc = valider("description");
+
+	        $image_ext = false;
+	        if (isset($_FILES["image_recette"]) && $_FILES["image_recette"]["error"] == 0) {
+	            $ext = strtolower(pathinfo($_FILES["image_recette"]["name"], PATHINFO_EXTENSION));
+	            if (in_array($ext, array("jpg", "jpeg", "png", "webp"))) {
+	                $image_ext = $ext;
+	                // Upload de la nouvelle image
+	                $target_dir = "ressources/recettes/";
+	                move_uploaded_file($_FILES["image_recette"]["tmp_name"], $target_dir . $idRecette . "." . $image_ext);
+	            }
+	        }
+
+	        modifierRecette($idRecette, $nom, $desc, $cat, $image_ext);
+	        $qs = array("view" => "recette", "id" => $idRecette, "msg" => "Recette modifiée !");
+	    } else {
+	        $qs = array("view" => "main", "msg" => "Action non autorisée.");
+	    }
+	break;
+
         case 'SupprimerRecette':
             securiser("index.php?view=main");
             $idRecette = valider("id");
