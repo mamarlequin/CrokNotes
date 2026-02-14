@@ -1,22 +1,20 @@
 <?php
 include_once "libs/modele.php";
 
-// Récupération de l'ID de la recette depuis l'URL
 $id = valider("id");
 $recette = getRecette($id);
 
-// Si la recette n'existe pas, retour à l'accueil avec un message
 if (!$recette) {
     header("Location: index.php?view=main&msg=" . urlencode("Désolé, cette recette est introuvable."));
     exit();
 }
 
-// Récupération des données liées
 $ingredients = getIngredientsRecette($id);
 $etapes = getEtapes($id);
-
-// Image par défaut si aucune image n'est trouvée
 $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=800&auto=format&fit=crop";
+
+// Vérification si l'utilisateur est le créateur
+$isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_createur']);
 ?>
 
 <main class="pt-24 px-6 pb-20 max-w-6xl mx-auto">
@@ -35,15 +33,28 @@ $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
             
-            <div class="absolute bottom-12 left-12 right-12">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="glass px-4 py-1.5 rounded-full text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                        <?php echo htmlspecialchars($recette['nom_categorie']); ?>
-                    </span>
+            <div class="absolute bottom-12 left-12 right-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="glass px-4 py-1.5 rounded-full text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                            <?php echo htmlspecialchars($recette['nom_categorie']); ?>
+                        </span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-black text-white italic drop-shadow-2xl">
+                        <?php echo htmlspecialchars($recette['nom']); ?>
+                    </h1>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-black text-white italic drop-shadow-2xl">
-                    <?php echo htmlspecialchars($recette['nom']); ?>
-                </h1>
+
+                <!-- BOUTON DE SUPPRESSION (Visible uniquement par le créateur) -->
+                <?php if ($isCreator): ?>
+                    <div class="flex gap-4">
+                        <a href="controleur.php?action=SupprimerRecette&id=<?php echo $id; ?>" 
+                           onclick="return confirm('Es-tu sûr de vouloir supprimer définitivement cette recette ?');"
+                           class="flex items-center gap-2 px-6 py-3 bg-red-500/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/30 rounded-2xl transition-all font-black text-xs uppercase tracking-widest shadow-xl">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Supprimer ma recette
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -126,7 +137,6 @@ $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w
                     <?php endif; ?>
                 </div>
 
-                <!-- Pied de page de la recette -->
                 <div class="pt-8 flex justify-center">
                     <a href="./?view=main" class="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour aux recettes
