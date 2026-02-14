@@ -19,7 +19,7 @@ function verifUserbdd($email) {
 function getUserByEmail($email) {
     $sql = "SELECT id, name, email FROM USER WHERE email='$email'";
     $res = parcoursRs(SQLSelect($sql));
-    return $res ? $res[0] : false;
+    return $res ? $res : false;
 }
 
 /**

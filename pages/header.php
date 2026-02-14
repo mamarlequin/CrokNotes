@@ -101,6 +101,10 @@ $userPrenom = valider("prenom", "SESSION");
                         <label class="block text-white text-[10px] uppercase font-bold mb-1 ml-1 opacity-70">Mot de passe</label>
                         <input type="password" name="password" required class="w-full bg-white/10 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="••••••••">
                     </div>
+                    <div style="margin: 10px 0; font-size: 0.9em;">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember" class="text-white" >Se souvenir de moi</label>
+                    </div>
                     <button type="submit" name="action" value="Connexion" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">Se connecter</button>
                 </form>
 
