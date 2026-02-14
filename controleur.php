@@ -19,18 +19,27 @@ if ($action = valider("action")) {
             }
         break;
 
-        case 'Inscription':
-            $name = valider("name");
-            $email = valider("email");
-            $password = valider("password");
-
-            if ($idUser = creerUser($name, $email, $password)) {
-                // Connexion automatique après inscription
-                if (verifUser($email, $password)) {
-                    $qs = array("view" => "main", "msg" => "Bienvenue $name ! Votre compte est créé.");
+        case 'SupprimerRecette':
+            securiser("index.php?view=main");
+            $idRecette = valider("id");
+            $idUser = $_SESSION["idUser"];
+            
+            // On vérifie que la recette appartient bien à l'utilisateur
+            $recette = getRecette($idRecette);
+            if ($recette && $recette['id_createur'] == $idUser) {
+                // Suppression de l'image sur le serveur si elle existe
+                $path = "ressources/recettes/" . $idRecette . "." . $recette['image_ext'];
+                if ($recette['image_ext'] != 'none' && file_exists($path)) {
+                    unlink($path);
+                }
+                
+                if (supprimerRecette($idRecette)) {
+                    $qs = array("view" => "main", "msg" => "Recette supprimée avec succès.");
+                } else {
+                    $qs = array("view" => "main", "msg" => "Erreur lors de la suppression.");
                 }
             } else {
-                $qs = array("view" => "main", "msg" => "Erreur lors de l'inscription. L'email est peut-être déjà utilisé.");
+                $qs = array("view" => "main", "msg" => "Action non autorisée.");
             }
         break;
 
