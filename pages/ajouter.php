@@ -83,7 +83,7 @@ $ingredientsExistants = listerIngredients();
                 <textarea name="description" rows="3" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none focus:ring-1 focus:ring-orange-500" placeholder="Racontez-nous..."></textarea>
             </div>
 
-            <button type="submit" name="action" value="Publier" class="w-full py-5 bg-orange-500 font-black rounded-2xl shadow-xl hover:bg-orange-600 transition-all transform active:scale-[0.98] uppercase tracking-widest">Diffuser ma recette</button>
+            <button type="submit" name="action" value="Publier" class="w-full py-5 bg-orange-500 font-black rounded-2xl shadow-xl hover:bg-orange-600 transition-all transform active:scale-[0.98] uppercase tracking-widest">Envoyer ma recette</button>
         </form>
     </div>
 </main>
