@@ -13,23 +13,35 @@ function verifUserbdd($email) {
     return parcoursRs(SQLSelect($sql));
 }
 
+/**
+ * Récupère les infos de base d'un utilisateur via son email
+ */
 function getUserByEmail($email) {
     $sql = "SELECT id, name, email FROM USER WHERE email='$email'";
-    return parcoursRs(SQLSelect($sql));
+    $res = parcoursRs(SQLSelect($sql));
+    return $res ? $res[0] : false;
 }
 
 /**
  * Crée un utilisateur avec un mot de passe haché
+ * Renvoie l'ID de l'utilisateur ou false si l'email existe déjà
  */
 function creerUser($name, $email, $password) {
+    // ÉTAPE CRITIQUE : Vérifier si l'utilisateur existe déjà avant d'insérer
+    if (getUserByEmail($email)) {
+        return false;
+    }
+
     // Hachage du mot de passe avec l'algorithme par défaut (BCRYPT)
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
     $nameSafe = addslashes($name);
     $emailSafe = addslashes($email);
 
+    // On utilise 0 pour le booléen admin (FALSE)
     $sql = "INSERT INTO USER(name, email, password, PP_ext, admin) 
             VALUES ('$nameSafe', '$emailSafe', '$hash', 'None', 0)";
+    
     return SQLInsert($sql);
 }
 

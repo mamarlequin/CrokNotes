@@ -10,7 +10,7 @@ $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w
 <main class="pt-10 px-6 pb-20 max-w-7xl mx-auto">
     <?php if ($msg): ?>
         <div id="notification" class="mb-8 glass border-l-4 border-orange-500 p-4 rounded-xl flex items-center justify-between text-white cursor-pointer animate-in fade-in slide-in-from-top-4">
-            <p><?php echo htmlspecialchars($msg); ?></p>
+            <p><?php echo $msg; ?></p>
             <i data-lucide="x" class="w-4 h-4 opacity-50"></i>
         </div>
     <?php endif; ?>
@@ -21,7 +21,7 @@ $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w
             <h1 class="text-6xl font-black text-white italic mb-4">Cuisine Simple,<br><span class="text-orange-500">Plaisir Partagé.</span></h1>
             <p class="text-white/70 text-lg mb-8">Régale toi bien.</p>
             <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                <a href="./?view=ajouter" class="inline-flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 active:scale-95">
+                <a href="./?view=ajouter" class="btn-add-recipe inline-flex items-center gap-3 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 active:scale-95">
                     <i data-lucide="plus-circle"></i> AJOUTER UNE RECETTE
                 </a>
             </div>
