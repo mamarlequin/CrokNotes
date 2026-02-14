@@ -94,7 +94,7 @@ $isCreator = (isset($_SESSION["idUser"]) && $_SESSION["idUser"] == $recette['id_
                     </div>
                     <div>
                         <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Recette de</p>
-                        <p class="text-white font-bold text-xl">Chef <?php echo htmlspecialchars($recette['nom_createur']); ?></p>
+                        <p class="text-white font-bold text-xl"><?php echo htmlspecialchars($recette['nom_createur']); ?></p>
                     </div>
                 </div>
             </div>
