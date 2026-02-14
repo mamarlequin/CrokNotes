@@ -133,14 +133,27 @@ function modifierRecette($idRecette, $nom, $description, $id_categorie, $image_e
     $nomSafe = addslashes($nom);
     $descSafe = addslashes($description);
     
+    // On prépare la base de la requête
     $sql = "UPDATE RECETTE SET nom='$nomSafe', description='$descSafe', id_categorie='$id_categorie'";
     
-    // Si une nouvelle image a été uploadée, on met à jour l'extension
+    // Si une nouvelle extension d'image est fournie, on l'ajoute à la requête
     if ($image_ext) {
         $sql .= ", image_ext='$image_ext'";
     }
     
     $sql .= " WHERE id=$idRecette";
     return SQLUpdate($sql);
+}
+
+// Supprime toutes les étapes d'une recette
+function supprimerEtapesRecette($idRecette) {
+    $sql = "DELETE FROM ETAPE WHERE id_recette = $idRecette";
+    return SQLDelete($sql);
+}
+
+// Supprime toutes les liaisons d'ingrédients d'une recette
+function supprimerIngredientsRecette($idRecette) {
+    $sql = "DELETE FROM APPARTIENT WHERE id_recette = $idRecette";
+    return SQLDelete($sql);
 }
 ?>

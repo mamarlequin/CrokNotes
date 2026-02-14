@@ -24,28 +24,39 @@ if ($action = valider("action")) {
 	    $idRecette = valider("id_recette");
 	    $idUser = $_SESSION["idUser"];
 
-	    // Vérification de sécurité : est-ce bien l'auteur ?
 	    $recetteActuelle = getRecette($idRecette);
+	    
+	    // Vérification de propriété
 	    if ($recetteActuelle["id_createur"] == $idUser) {
 	        $nom = valider("nom");
 	        $cat = valider("id_categorie");
 	        $desc = valider("description");
 
-	        $image_ext = false;
+	        $image_ext = false; 
+	        
+	        // On vérifie si un nouveau fichier a été envoyé sans erreur
 	        if (isset($_FILES["image_recette"]) && $_FILES["image_recette"]["error"] == 0) {
 	            $ext = strtolower(pathinfo($_FILES["image_recette"]["name"], PATHINFO_EXTENSION));
+	            
+	            // Validation de l'extension
 	            if (in_array($ext, array("jpg", "jpeg", "png", "webp"))) {
 	                $image_ext = $ext;
-	                // Upload de la nouvelle image
 	                $target_dir = "ressources/recettes/";
+	                
+	                // Si une ancienne image existait avec une extension différente, 
+	                // il est propre de supprimer l'ancien fichier ici si tu le souhaites.
+	                
+	                // On déplace le nouveau fichier en écrasant l'éventuel ancien du même nom
 	                move_uploaded_file($_FILES["image_recette"]["tmp_name"], $target_dir . $idRecette . "." . $image_ext);
 	            }
 	        }
 
+	        // Mise à jour de la base de données
 	        modifierRecette($idRecette, $nom, $desc, $cat, $image_ext);
-	        $qs = array("view" => "recette", "id" => $idRecette, "msg" => "Recette modifiée !");
-	    } else {
-	        $qs = array("view" => "main", "msg" => "Action non autorisée.");
+
+	        // ... (ton code de suppression/réinsertion des ingrédients et étapes) ...
+
+	        $qs = array("view" => "recette", "id" => $idRecette, "msg" => "Recette et image mises à jour !");
 	    }
 	break;
 
@@ -72,6 +83,25 @@ if ($action = valider("action")) {
                 $qs = array("view" => "main", "msg" => "Action non autorisée.");
             }
         break;
+
+	case 'Supprimer':
+	    securiser("index.php?view=main");
+	    $idRecette = valider("id");
+	    $idUser = $_SESSION["idUser"];
+
+	    // Vérification de sécurité : seul l'auteur peut supprimer
+	    $recette = getRecette($idRecette);
+	    if ($recette && $recette["id_createur"] == $idUser) {
+	        // Optionnel : supprimer le fichier image sur le disque
+	        $imagePath = "ressources/recettes/" . $idRecette . "." . $recette["image_ext"];
+	        if (file_exists($imagePath)) unlink($imagePath);
+
+	        supprimerRecette($idRecette);
+	        $qs = array("view" => "main", "msg" => "La recette a été supprimée.");
+	    } else {
+	        $qs = array("view" => "main", "msg" => "Action non autorisée.");
+	    }
+	break;
 
         case 'Publier':
             securiser("index.php?view=main");

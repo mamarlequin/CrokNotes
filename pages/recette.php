@@ -47,13 +47,24 @@ $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["
                             <?php echo htmlspecialchars($recette['nom']); ?>
                         </h1>
                     </div>
-                    
-                    <?php if ($isAuthor): ?>
-                    <a href="./?view=modifier&id=<?php echo $recette['id']; ?>" class="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-orange-500 text-white rounded-2xl font-bold transition-all backdrop-blur-md border border-white/20">
-                        <i data-lucide="edit-3" class="w-5 h-5"></i>
-                        <span>Modifier</span>
-                    </a>
-                    <?php endif; ?>
+			<?php if ($isAuthor): ?>
+			    <div class="flex flex-wrap items-center gap-4 mt-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+			        
+			        <a href="./?view=modifier&id=<?php echo $recette['id']; ?>" 
+			           class="flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-black transition-all shadow-lg shadow-orange-500/20 active:scale-95 group">
+			            <i data-lucide="edit-3" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+			            <span>MODIFIER LA RECETTE</span>
+			        </a>
+
+			        <a href="controleur.php?action=Supprimer&id=<?php echo $recette['id']; ?>" 
+			           onclick="return confirm('Attention : cette action est irréversible. Supprimer cette recette ?');"
+			           class="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-white/50 hover:text-red-500 rounded-2xl font-bold transition-all backdrop-blur-md active:scale-95 group">
+			            <i data-lucide="trash-2" class="w-5 h-5 opacity-50 group-hover:opacity-100"></i>
+			            <span>Supprimer</span>
+			        </a>
+
+			    </div>
+			<?php endif; ?>
                 </div>
             </div>
         </div>
@@ -91,7 +102,7 @@ $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["
                     </div>
                     <div>
                         <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Recette de</p>
-                        <p class="text-white font-bold text-xl">Chef <?php echo htmlspecialchars($recette['nom_createur']); ?></p>
+                        <p class="text-white font-bold text-xl"><?php echo htmlspecialchars($recette['nom_createur']); ?></p>
                     </div>
                 </div>
             </div>
