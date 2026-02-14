@@ -15,7 +15,7 @@ function getUserByEmail($email) {
     $e = proteger($email);
     $sql = "SELECT id, name, email FROM USER WHERE email='$e'";
     $res = parcoursRs(SQLSelect($sql));
-    return $res ? $res[0] : false;
+    return $res ? $res : false;
 }
 
 function creerUser($name, $email, $password) {
