@@ -67,4 +67,31 @@ function proteger($str)
 		return addslashes($str);
 }
 
-// ... (reste des fonctions br, hr, tprint, rediriger inchangé)
+/**
+ * Affiche un tableau de manière lisible pour le débogage
+ */
+function tprint($tab)
+{
+	echo "<pre>\n";
+	print_r($tab);
+	echo "</pre>\n";	
+}
+
+/**
+ * Redirige l'utilisateur vers une URL avec des paramètres de requête éventuels
+ */
+function rediriger($url,$tabQS="")
+{
+	$qs =""; 
+
+	if (is_array($tabQS)) {
+		foreach($tabQS as $nom => $val) {
+			$qs .= "$nom=" . urlencode($val) . "&";
+		}
+	}
+	
+	header("Location:$url?" . rtrim($qs, "&") );
+	die(""); 
+}
+
+?>
