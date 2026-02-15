@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
     // ob_start() permet de stocker l'affichage en mémoire tampon.
     // Cela évite l'erreur "Headers already sent" si on redirige après avoir inclus du HTML.
     ob_start();

@@ -19,6 +19,23 @@ if ($action = valider("action")) {
             }
         break;
 
+	case 'Inscription':
+	    $name = valider("name");
+	    $email = valider("email");
+	    $password = valider("password");
+
+	    if ($name && $email && $password) {
+	        if (creerUser($name, $email, $password)) {
+	            // Connexion automatique après inscription
+	            if ($user = connecterUser($email, $password)) {
+	                $qs = array("view" => "main", "msg" => "Bienvenue !");
+	            }
+	        } else {
+	            $qs = array("view" => "inscription", "msg" => "Cet email est déjà utilisé.");
+	        }
+	    }
+	break;
+
 	case 'Modifier':
 	    securiser("index.php?view=main");
 	    $idRecette = valider("id_recette");
@@ -136,6 +153,10 @@ if ($action = valider("action")) {
                 if ($ings_noms) {
                     foreach($ings_noms as $key => $nomIng) {
                         if (empty(trim($nomIng))) continue;
+
+			$qte = (isset($ings_qtes[$key]) && $ings_qtes[$key] !== "") ? $ings_qtes[$key] : 0;
+        		$unite = isset($ings_unites[$key]) ? $ings_unites[$key] : "";
+
                         $idIng = getIngredientId($nomIng) ?: creerIngredient($nomIng);
                         lierIngredientRecette($idRecette, $idIng, $ings_qtes[$key], $ings_unites[$key]);
                     }

@@ -21,15 +21,18 @@ $ingredientsExistants = listerIngredients();
                         <label class="text-[10px] font-bold uppercase opacity-50 ml-1">Nom du plat</label>
                         <input type="text" name="nom" required class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all" placeholder="Ex: Lasagnes Maison">
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold uppercase opacity-50 ml-1">Catégorie</label>
-                        <select name="id_categorie" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all">
-                            <?php foreach($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>" class="text-black"><?php echo $cat['nom']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
+			<div class="space-y-1">
+			    <label class="text-[10px] font-bold uppercase opacity-50 ml-1">Catégorie</label>
+			    <select name="id_categorie" class="w-full bg-white/10 border border-white/10 rounded-2xl py-4 px-5 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all text-white appearance-none">
+			        <?php foreach($categories as $cat): ?>
+			            <option value="<?php echo $cat['id']; ?>" <?php if(isset($recette) && $cat['id'] == $recette['id_categorie']) echo "selected"; ?> class="bg-slate-900 text-white">
+			                <?php echo htmlspecialchars($cat['nom']); ?>
+			            </option>
+			        <?php endforeach; ?>
+			    </select>
+			</div>                    
+		    </div>
+               
 
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold uppercase opacity-50 ml-1">Photo de couverture</label>
@@ -52,8 +55,8 @@ $ingredientsExistants = listerIngredients();
                 </div>
                 <div id="ing_list" class="space-y-3">
                     <div class="ing-row grid grid-cols-12 gap-3 items-center">
-                        <input list="ings" name="ing_nom[]" placeholder="Nom de l'ingrédient" class="col-span-6 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none focus:ring-1 focus:ring-orange-500">
-                        <input type="number" step="0.01" name="ing_qte[]" placeholder="Qté" class="col-span-2 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none text-center">
+                        <input list="ings" name="ing_nom[]" placeholder="Nom de l'ingrédient" class="col-span-6 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none focus:ring-1 focus:ring-orange-500" required>
+                        <input type="number" step="0.01" name="ing_qte[]" placeholder="Qté" class="col-span-2 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none text-center" required>
                         <input type="text" name="ing_unite[]" placeholder="Unité" class="col-span-3 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none">
                         <button type="button" class="del_row col-span-1 text-white/20 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>

@@ -1,82 +1,71 @@
 <?php
 include_once "libs/modele.php";
 
-// Récupération de l'ID de la recette depuis l'URL
 $id = valider("id");
 $recette = getRecette($id);
 
-// Si la recette n'existe pas, retour à l'accueil avec un message
 if (!$recette) {
     header("Location: index.php?view=main&msg=" . urlencode("Désolé, cette recette est introuvable."));
     exit();
 }
 
-// Récupération des données liées
 $ingredients = getIngredientsRecette($id);
 $etapes = getEtapes($id);
-
-// Image par défaut si aucune image n'est trouvée
 $fallback = "https://images.unsplash.com/photo-1495195129352-aed325a55b65?q=80&w=800&auto=format&fit=crop";
-
-// Vérification si l'utilisateur est l'auteur pour afficher le bouton modifier
 $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["id_createur"]);
 ?>
 
-<main class="pt-24 px-6 pb-20 max-w-6xl mx-auto">
-    <div class="glass rounded-[3rem] overflow-hidden shadow-2xl animate-in fade-in duration-700">
-        
-        <div class="relative h-[450px]">
-            <?php 
+<main class="pt-24 px-4 pb-20 max-w-6xl mx-auto">
+    <div class="glass rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in duration-700">
+
+        <div class="relative h-[350px] md:h-[450px]">
+            <?php
                 $path = "ressources/recettes/" . $recette['id'] . "." . $recette['image_ext'];
                 $img = ($recette['image_ext'] != 'none' && file_exists($path)) ? $path : $fallback;
             ?>
-            <img src="<?php echo $img; ?>" 
-                 class="w-full h-full object-cover" 
+            <img src="<?php echo $img; ?>"
+                 class="w-full h-full object-cover"
                  onerror="this.onerror=null; this.src='<?php echo $fallback; ?>';"
                  alt="<?php echo htmlspecialchars($recette['nom']); ?>">
-            
+
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-            
-            <div class="absolute bottom-12 left-12 right-12">
-                <div class="flex items-center justify-between">
-                    <div class="space-y-4">
-                        <span class="glass px-4 py-1.5 rounded-full text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                            <?php echo htmlspecialchars($recette['nom_categorie']); ?>
-                        </span>
-                        <h1 class="text-5xl md:text-7xl font-black text-white italic drop-shadow-2xl">
-                            <?php echo htmlspecialchars($recette['nom']); ?>
-                        </h1>
-                    </div>
-			<?php if ($isAuthor): ?>
-			    <div class="flex flex-wrap items-center gap-4 mt-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-			        
-			        <a href="./?view=modifier&id=<?php echo $recette['id']; ?>" 
-			           class="flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-black transition-all shadow-lg shadow-orange-500/20 active:scale-95 group">
-			            <i data-lucide="edit-3" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
-			            <span>MODIFIER LA RECETTE</span>
-			        </a>
 
-			        <a href="controleur.php?action=Supprimer&id=<?php echo $recette['id']; ?>" 
-			           onclick="return confirm('Attention : cette action est irréversible. Supprimer cette recette ?');"
-			           class="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-white/50 hover:text-red-500 rounded-2xl font-bold transition-all backdrop-blur-md active:scale-95 group">
-			            <i data-lucide="trash-2" class="w-5 h-5 opacity-50 group-hover:opacity-100"></i>
-			            <span>Supprimer</span>
-			        </a>
-
-			    </div>
-			<?php endif; ?>
-                </div>
+            <div class="absolute bottom-8 left-6 right-6 md:bottom-12 md:left-12 md:right-12">
+                <span class="glass px-4 py-1.5 rounded-full text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                    <?php echo htmlspecialchars($recette['nom_categorie']); ?>
+                </span>
+                <h1 class="text-4xl md:text-7xl font-black text-white italic drop-shadow-2xl mt-4">
+                    <?php echo htmlspecialchars($recette['nom']); ?>
+                </h1>
             </div>
         </div>
 
-        <div class="p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-16">
-            
+        <?php if ($isAuthor): ?>
+            <div class="px-6 md:px-12 pt-8">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="./?view=modifier&id=<?php echo $recette['id']; ?>"
+                       class="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-2xl font-black transition-all shadow-lg active:scale-95 text-sm uppercase tracking-wider">
+                        <i data-lucide="edit-3" class="w-5 h-5 shrink-0"></i>
+                        <span>Modifier</span>
+                    </a>
+
+                    <a href="controleur.php?action=Supprimer&id=<?php echo $recette['id']; ?>"
+                       onclick="return confirm('Supprimer définitivement cette recette ?');"
+                       class="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-red-500/10 hover:bg-red-500 border border-red-500/50 text-red-500 hover:text-white rounded-2xl font-bold transition-all active:scale-95 text-sm uppercase tracking-wider">
+                        <i data-lucide="trash-2" class="w-5 h-5 shrink-0"></i>
+                        <span>Supprimer</span>
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="p-6 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+
             <div class="lg:col-span-1 space-y-8">
                 <div class="space-y-6">
                     <h2 class="text-2xl font-bold text-white flex items-center gap-3 border-b border-white/10 pb-4">
                         <i data-lucide="shopping-basket" class="text-orange-500 w-6 h-6"></i> Ingrédients
                     </h2>
-                    
                     <?php if (empty($ingredients)): ?>
                         <p class="text-white/40 italic text-sm">Aucun ingrédient listé.</p>
                     <?php else: ?>
@@ -97,12 +86,12 @@ $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["
                 </div>
 
                 <div class="glass p-6 rounded-[2rem] border-orange-500/20 bg-orange-500/5 flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center text-white font-black text-2xl shadow-lg">
+                    <div class="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center text-white font-black text-2xl shadow-lg shrink-0">
                         <?php echo strtoupper($recette['nom_createur'][0]); ?>
                     </div>
-                    <div>
-                        <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Recette de</p>
-                        <p class="text-white font-bold text-xl"><?php echo htmlspecialchars($recette['nom_createur']); ?></p>
+                    <div class="min-w-0">
+                        <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Chef</p>
+                        <p class="text-white font-bold text-xl truncate"><?php echo htmlspecialchars($recette['nom_createur']); ?></p>
                     </div>
                 </div>
             </div>
@@ -127,11 +116,11 @@ $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["
                     <?php else: ?>
                         <div class="space-y-10">
                             <?php foreach($etapes as $index => $etape): ?>
-                                <div class="flex gap-6 items-start group">
-                                    <div class="w-12 h-12 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)] group-hover:scale-110 transition-transform duration-300">
+                                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start group">
+                                    <div class="w-10 h-10 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shrink-0 shadow-lg">
                                         <?php echo $index + 1; ?>
                                     </div>
-                                    <div class="glass p-8 rounded-[2.5rem] flex-grow border-l-4 border-orange-500/30 hover:border-orange-500 transition-all duration-300">
+                                    <div class="glass p-6 md:p-8 rounded-[2rem] flex-grow border-l-4 border-orange-500/30 hover:border-orange-500 transition-all">
                                         <p class="text-white text-lg leading-relaxed">
                                             <?php echo nl2br(htmlspecialchars($etape['contenu'])); ?>
                                         </p>
@@ -144,7 +133,7 @@ $isAuthor = (valider("connecte", "SESSION") && $_SESSION["idUser"] == $recette["
 
                 <div class="pt-8 flex justify-center">
                     <a href="./?view=main" class="flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest">
-                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour aux recettes
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour
                     </a>
                 </div>
             </div>

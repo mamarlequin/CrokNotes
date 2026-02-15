@@ -72,8 +72,8 @@ $hasImage = ($recette['image_ext'] != 'none' && file_exists($path));
                 <div id="ing_list" class="space-y-3">
                     <?php if (empty($ingredientsRecette)): ?>
                         <div class="ing-row grid grid-cols-12 gap-3 items-center">
-                            <input list="ings" name="ing_nom[]" placeholder="Nom" class="col-span-6 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none">
-                            <input type="number" step="0.01" name="ing_qte[]" placeholder="Qté" class="col-span-2 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none text-center">
+                            <input list="ings" name="ing_nom[]" placeholder="Nom" class="col-span-6 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none" required>
+                            <input type="number" step="0.01" name="ing_qte[]" placeholder="Qté" class="col-span-2 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none text-center" required>
                             <input type="text" name="ing_unite[]" placeholder="Unité" class="col-span-3 bg-white/5 border border-white/10 rounded-xl py-3 px-4 outline-none">
                             <button type="button" class="del_row col-span-1 text-white/20 hover:text-red-500"><i data-lucide="trash-2"></i></button>
                         </div>
