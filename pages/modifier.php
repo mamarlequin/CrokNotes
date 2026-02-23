@@ -135,12 +135,29 @@ $(document).ready(function() {
         lucide.createIcons();
     });
     $('#add_step').click(() => {
-        const row = $('.step-row:first').clone();
-        row.find('textarea').val('');
-        row.appendTo('#step_list').hide().slideDown(200);
-        updateSteps();
-        lucide.createIcons();
+    // On cherche la ligne à cloner
+        const template = $('.step-row').first();
+    
+        if (template.length > 0) {
+            const row = template.clone();
+            row.find('textarea').val(''); // On vide le texte
+            row.appendTo('#step_list').hide().slideDown(200);
+            updateSteps();
+            lucide.createIcons(); // Indispensable pour l'icône poubelle
+        } else {
+        // Cas de secours si aucune étape n'existe du tout
+            const newRow = `
+                <div class="step-row flex gap-4 items-start">
+                    <span class="step-num bg-orange-500 text-white font-black w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-lg">1</span>
+                    <textarea name="etape_contenu[]" required rows="2" class="flex-grow bg-white/5 border border-white/10 rounded-xl py-4 px-5 outline-none"></textarea>
+                    <button type="button" class="del_row text-white/20 hover:text-red-500 mt-4"><i data-lucide="trash-2"></i></button>
+                </div>`;
+            $('#step_list').append(newRow);
+            updateSteps();
+            lucide.createIcons();
+        }
     });
+
     $(document).on('click', '.del_row', function() {
         $(this).parent().remove();
         updateSteps();

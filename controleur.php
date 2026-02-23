@@ -43,40 +43,54 @@ if ($action = valider("action")) {
 
 	    $recetteActuelle = getRecette($idRecette);
 	    
-	    // Vérification de propriété
 	    if ($recetteActuelle["id_createur"] == $idUser) {
 	        $nom = valider("nom");
 	        $cat = valider("id_categorie");
 	        $desc = valider("description");
+	        
+	        // Récupération des tableaux d'ingrédients et étapes
+	        $ings_noms = valider("ing_nom", "array");
+	        $ings_qtes = valider("ing_qte", "array");
+	        $ings_unites = valider("ing_unite", "array");
+	        $etapes = valider("etape_contenu", "array");
 
 	        $image_ext = false; 
-	        
-	        // On vérifie si un nouveau fichier a été envoyé sans erreur
 	        if (isset($_FILES["image_recette"]) && $_FILES["image_recette"]["error"] == 0) {
 	            $ext = strtolower(pathinfo($_FILES["image_recette"]["name"], PATHINFO_EXTENSION));
-	            
-	            // Validation de l'extension
 	            if (in_array($ext, array("jpg", "jpeg", "png", "webp"))) {
 	                $image_ext = $ext;
-	                $target_dir = "ressources/recettes/";
-	                
-	                // Si une ancienne image existait avec une extension différente, 
-	                // il est propre de supprimer l'ancien fichier ici si tu le souhaites.
-	                
-	                // On déplace le nouveau fichier en écrasant l'éventuel ancien du même nom
-	                move_uploaded_file($_FILES["image_recette"]["tmp_name"], $target_dir . $idRecette . "." . $image_ext);
+	                move_uploaded_file($_FILES["image_recette"]["tmp_name"], "ressources/recettes/" . $idRecette . "." . $image_ext);
 	            }
 	        }
 
-	        // Mise à jour de la base de données
+	        // 1. Mise à jour des infos de base
 	        modifierRecette($idRecette, $nom, $desc, $cat, $image_ext);
 
-	        // ... (ton code de suppression/réinsertion des ingrédients et étapes) ...
+	        // 2. MISE À JOUR DES INGRÉDIENTS (Nettoyage + Réinsertion)
+	        supprimerIngredientsRecette($idRecette);
+	        if ($ings_noms) {
+	            foreach($ings_noms as $key => $nomIng) {
+	                if (empty(trim($nomIng))) continue;
+	                $idIng = getIngredientId($nomIng) ?: creerIngredient($nomIng);
+	                
+	                // Correction pour éviter l'erreur SQL "Incorrect integer value" si la quantité est vide
+	                $qte = ($ings_qtes[$key] !== "") ? $ings_qtes[$key] : 0;
+	                lierIngredientRecette($idRecette, $idIng, $qte, $ings_unites[$key]);
+	            }
+	        }
 
-	        $qs = array("view" => "recette", "id" => $idRecette, "msg" => "Recette et image mises à jour !");
+	        // 3. MISE À JOUR DES ÉTAPES (Nettoyage + Réinsertion)
+	        supprimerEtapesRecette($idRecette);
+	        if ($etapes) {
+	            foreach($etapes as $contenuEtape) {
+	                if (empty(trim($contenuEtape))) continue;
+	                creerEtape($idRecette, $contenuEtape);
+	            }
+	        }
+
+	        $qs = array("view" => "recette", "id" => $idRecette, "msg" => "Recette mise à jour avec succès !");
 	    }
 	break;
-
         case 'SupprimerRecette':
             securiser("index.php?view=main");
             $idRecette = valider("id");

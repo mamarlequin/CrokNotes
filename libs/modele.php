@@ -85,11 +85,11 @@ function getRecette($idRecette) {
 }
 
 function creerEtape($idRecette, $contenu) {
-    $c = proteger($contenu);
-    $sql = "INSERT INTO ETAPE(id_recette, contenu) VALUES ('$idRecette', '$c')";
+    $idRecette = intval($idRecette);
+    $contenu = addslashes($contenu);
+    $sql = "INSERT INTO ETAPE (id_recette, contenu) VALUES ($idRecette, '$contenu')";
     return SQLInsert($sql);
 }
-
 function getEtapes($idRecette) {
     $id = intval($idRecette);
     $sql = "SELECT * FROM ETAPE WHERE id_recette = $id ORDER BY id ASC";
@@ -145,8 +145,8 @@ function modifierRecette($idRecette, $nom, $description, $id_categorie, $image_e
     return SQLUpdate($sql);
 }
 
-// Supprime toutes les étapes d'une recette
 function supprimerEtapesRecette($idRecette) {
+    $idRecette = intval($idRecette);
     $sql = "DELETE FROM ETAPE WHERE id_recette = $idRecette";
     return SQLDelete($sql);
 }
